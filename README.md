@@ -2,65 +2,64 @@
 
 <img width="100px" style="border-radius: 10px;" src="https://cdn.panda-studios.eu/logo-transparent.png" alt="Panda-Studios Logo">
 
-# CloudNet V3 Webinterface
+# URL Shorter
 
-## Vorraussetzungen:
+## Requirements:
 
-- CloudNet 3.x und das modifizierte Rest-Modul
-- Webserver oder Webspace
-    - PHP 8
-    - PHP Curl
+- Apache2
+- PHP 8
 
-## Download
-
-Das Module kannst du hier Herrunterladen ``https://f64.workupload.com/download/3dV5dnADZ4x``
+## Installation via .sh
+```
+bash <(curl -s https://raw.githubusercontent.com/Panda-Projects/URL-Shorter/master/installer.sh )
+```
+OR
+```
+wget https://raw.githubusercontent.com/Panda-Projects/URL-Shorter/master/installer.sh
+bash installer.sh
+```
 
 ## Installation
 
-1. Lösche ```cloudnet-rest.jar in CloudNet``` aus dem Ordner Modul
-2. Downloade die modifizierte ``cloudnet-rest.jar``
-3. Starte CloudNet neu
-4. Installieren Sie Apache2
-5. Clonen Sie jetzt das Webinterface mit ``git clone https://github.com/Panda-Projects/CloudNet-V3-Webinterface.git``
 
-Info: Das Webinterface funktioniert auch auf einen externen Server/Webspace!
+
 
 ### Installation und Webserver Konfiguration
 
 #### Apache2
 
-1. Um Apche2 zu installieren benutzen Sie den folgenden Kommand:
+1. To install Apche2 use the following command:
    ```apt install apache2```
-2. Danache benutzen Sie den Kommand um eine Apache2 config zu erstellen
-   ```nano /etc/apache2/sites-available/webinterface.conf```
-3. Danache kopieren Sie den folgenden Text
+2. Danach verwenden Sie den Befehl zum Erstellen einer Apache2-Konfiguration
+   ```nano /etc/apache2/sites-available/url-shorter.conf```
+3. Then copy the following text
 ```
         <VirtualHost *:80>
-            ServerName webinterface.example.com
-            DocumentRoot "/var/www/webinterface/public"
-            <Directory /var/www/webinterface/public>
+            ServerName url-shorter.example.com
+            DocumentRoot "/var/www/url-shorter/public"
+            <Directory /var/www/url-shorter/public>
                     AllowOverride All
             </Directory>
         </VirtualHost>
 ```
-4. Verlassen Sie die Anwendung mit ``STRG+X`` und dann mit ``y`` und ``RETURN`` speichern
-5. Atkivieren Sie die Seite nun mit den folgendem Befehl
-   ```a2ensite webinterface.conf```
-6. Starten Sie Apache2 neu
+4. Exit the application with ``STRG+X`` and then save with ``y`` and ``RETURN``
+5. Now activate the page with the following command
+   ```a2ensite url-shorter.conf```
+6. Restart Apache2
    ```service apache2 restart```
 
 
 
-### Installation von Composer
+### Composer installation
 #### Debian 11
-1. Download von ``composer-setup.php``
+1. Download ``composer-setup.php``
 
         php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 
-2. Installieren von Composer Global
+2. Install Composer Global
 
-        php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-        chmod +x /usr/local/bin/composer
+        php composer-setup.php --install-dir=/usr/bin --filename=composer
+        chmod +x /usr/bin/composer
 
 ## Support
 
