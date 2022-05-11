@@ -34,7 +34,6 @@ composer install
 file="/etc/apache2/sites-available/url-shorter.conf"
 echo "        <VirtualHost *:80>" > $file
 echo "            ServerName go.demo.projects-studios.eu" > $file
-# shellcheck disable=SC2129
 echo "            DocumentRoot \"/var/www/webinterface/public\"" >> $file
 echo "            <Directory /var/www/webinterface/public>" >> $file
 echo "                    AllowOverride All" >> $file
