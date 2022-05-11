@@ -26,9 +26,23 @@ sudo chmod +x /usr/bin/composer
 
 mkdir "/var/www/go/"
 cd /var/www/go
-git clone https://github.com/Panda-Projects/URL-Shorter.git
+git clone https://github.com/Panda-Projects/URL-Shorter.git .
+
+composer install
 
 
+file="/etc/apache2/sites-available/url-shorter.conf"
+echo "        <VirtualHost *:80>" > $file
+echo "            ServerName go.demo.projects-studios.eu" > $file
+# shellcheck disable=SC2129
+echo "            DocumentRoot \"/var/www/webinterface/public\"" >> $file
+echo "            <Directory /var/www/webinterface/public>" >> $file
+echo "                    AllowOverride All" >> $file
+echo "            </Directory>" >> $file
+echo "        </VirtualHost>" >> $file
+cat $file
 
+a2ensite url-shorter.conf
+service apache2 restart
 
-echo "Webserver install"
+echo "URL Shorter was install"
