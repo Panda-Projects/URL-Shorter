@@ -44,4 +44,6 @@ cat $file
 a2ensite url-shorter.conf
 service apache2 restart
 
+mv .env.example .env
+
 echo "URL Shorter was install"
