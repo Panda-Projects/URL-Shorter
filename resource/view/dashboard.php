@@ -148,7 +148,7 @@
                                         ></div>
                                     </div>
                                     <div>
-                                        <p class="font-semibold">Selfe</p>
+                                        <p class="font-semibold">Self</p>
 
                                     </div>
                                 </div>
@@ -207,7 +207,8 @@
                                         ></div>
                                     </div>
                                     <div>
-                                        <p class="font-semibold"><?= $user->userFromId($redirect1["userId"])["username"] ?></p>
+                                        <?php $username = $user->userFromId($redirect1["userId"]); ?>
+                                        <p class="font-semibold"><?= $username == null ? "Delete User" : $username["username"] ?></p>
 
                                     </div>
                                 </div>
@@ -228,6 +229,20 @@
                                 <?= (new DateTime($redirect1["date"]))->format('d.m.Y') ?>
                             </td>
                             <td class="px-4 py-3 text-sm">
+                                <form method="post">
+                                    <input name="action" value="deleteRedirect" type="hidden">
+                                    <input name="id" value="<?= $redirect1["id"] ?>" type="hidden">
+                                    <button
+                                            class="block w-full px-4 py-2 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 border border-transparent rounded-lg focus:outline-none focus:shadow-outline-purple"
+                                            type="submit"
+                                    >
+                                        <svg class="w-6 h-6 text-red-600 hover:text-red-700"
+                                             fill="currentColor"
+                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                            <path d="M135.2 17.69C140.6 6.848 151.7 0 163.8 0H284.2C296.3 0 307.4 6.848 312.8 17.69L320 32H416C433.7 32 448 46.33 448 64C448 81.67 433.7 96 416 96H32C14.33 96 0 81.67 0 64C0 46.33 14.33 32 32 32H128L135.2 17.69zM394.8 466.1C393.2 492.3 372.3 512 346.9 512H101.1C75.75 512 54.77 492.3 53.19 466.1L31.1 128H416L394.8 466.1z"/>
+                                        </svg>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         <?php

@@ -15,7 +15,7 @@
                     <img
                             aria-hidden="true"
                             class="hidden object-cover w-full h-full dark:block"
-                            src="../assets/img/create-account-office-dark.jpeg"
+                            src="<?= $_ENV["WEBSITE_URL"] ?>/assets/img/create-account-office-dark.jpeg"
                             alt="Office"
                     />
                 </div>

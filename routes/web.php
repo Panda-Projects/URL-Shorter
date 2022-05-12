@@ -10,12 +10,18 @@ $user = new Users($connection);
 if ($user->countUser() > 0) {
     if (!empty($_SESSION["jwt"]) && JWTHelper::validate($_SESSION["jwt"])) {
         SimpleRouter::form("/", function () use ($redirect, $user) {
-            if (isset($_POST["action"]) && $_POST["action"] == "createRedirect") {
-                if (isset($_POST["redirect_url"]) && isset($_POST["code"])) {
-                    $redirect->createRedirect($_POST["code"], JWTHelper::getUserId($_SESSION["jwt"]), $_POST["redirect_url"]);
-                    header("Location: " . $_ENV["WEBSITE_URL"]);
-                } else {
-                    print_r("eee");
+            if (isset($_POST["action"])) {
+                if ($_POST["action"] == "createRedirect") {
+                    if (isset($_POST["redirect_url"]) && isset($_POST["code"])) {
+                        $redirect->createRedirect($_POST["code"], JWTHelper::getUserId($_SESSION["jwt"]), $_POST["redirect_url"]);
+                        header("Location: " . $_ENV["WEBSITE_URL"]);
+                    }
+                }
+                if ($_POST["action"] == "deleteRedirect") {
+                    if (isset($_POST["id"])) {
+                        $redirect->deleteRedirect($_POST["id"]);
+                        header("Location: " . $_ENV["WEBSITE_URL"]);
+                    }
                 }
             }
             $redirects = $redirect->getAllRedirects();
@@ -61,8 +67,8 @@ if ($user->countUser() > 0) {
     SimpleRouter::form("/", function () use ($user) {
         $name = "Setup";
         if (isset($_POST["action"]) && $_POST["action"] == "setup") {
-            if(isset($_POST["email"]) && isset($_POST["username"]) && isset($_POST["password"]) && isset($_POST["password_confirm"])) {
-                if($_POST["password"] === $_POST["password_confirm"]) {
+            if (isset($_POST["email"]) && isset($_POST["username"]) && isset($_POST["password"]) && isset($_POST["password_confirm"])) {
+                if ($_POST["password"] === $_POST["password_confirm"]) {
                     $user->createUser($_POST["username"], "", "", $_POST["email"], $_POST["password"]);
                     header("Location: " . $_ENV["WEBSITE_URL"]);
                 }

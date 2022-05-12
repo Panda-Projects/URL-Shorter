@@ -85,4 +85,12 @@ class Redirect
         $stmt->execute();
     }
 
+    public function deleteRedirect(int $id)
+    {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindParam("id", $id);
+        $stmt->execute();
+    }
+
 }
