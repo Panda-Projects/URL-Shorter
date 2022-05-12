@@ -4,6 +4,8 @@
 
 # URL Shorter
 
+## Test the URL-Shorter Webinterface live [here](https://go.demo.panda-studios.eu)
+
 ## Requirements:
 
 - Apache2
