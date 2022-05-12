@@ -11,12 +11,12 @@
 
 ## Installation via .sh
 ```
-bash <(curl -s https://raw.githubusercontent.com/Panda-Projects/URL-Shorter/master/installer.sh )
+bash <(curl -s https://raw.githubusercontent.com/Panda-Projects/URL-Shorter/master/installer.sh ) -d go.example.com
 ```
 OR
 ```
 wget https://raw.githubusercontent.com/Panda-Projects/URL-Shorter/master/installer.sh
-bash installer.sh
+bash installer.sh -d go.example.com
 ```
 
 ## Installation
