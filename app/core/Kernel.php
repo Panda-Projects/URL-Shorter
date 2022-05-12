@@ -4,6 +4,7 @@ use Pecee\SimpleRouter\SimpleRouter;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
+require '../lib/spyc/Spyc.php';
 
 $connection = null;
 try {
