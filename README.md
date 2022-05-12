@@ -20,11 +20,12 @@ bash installer.sh
 ```
 
 ## Installation
+1. clone the github repository with ``git clone https://github.com/Panda-Projects/URL-Shorter.git``
+2. Install Composer
+3. Rename .env.example to .env
+4. Edit the .env file with your data
 
-
-
-
-### Installation und Webserver Konfiguration
+### web server configuration
 
 #### Apache2
 
