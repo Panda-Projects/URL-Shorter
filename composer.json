@@ -15,7 +15,8 @@
     "ext-pdo": "*",
     "firebase/php-jwt": "^6.1",
     "vlucas/phpdotenv": "^5.4",
-    "ext-zip": "*"
+    "ext-zip": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {

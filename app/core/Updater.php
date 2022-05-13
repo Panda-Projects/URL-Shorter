@@ -9,39 +9,37 @@ class Updater
         if($zip->open($filename, ZipArchive::CREATE) !== true)
             $this->sendResponse(['task' => 'create zip file', 'success' => false]);
 
-        $updateFiles = Spyc::YAMLLoad($this->getUpdateFile());
-        $updateFiles = $updateFiles['files'];
-        $updateFolder = $_SESSION['root'];
+            $updateFiles = json_decode($this->getUpdateFile(), true);
+            $updateFolder = __DIR__ . "../../storage";
 
-        if(array_key_exists('add', $updateFiles)) {
-            $addFiles = $updateFiles['add'];
-            for($i = 0, $c = count($addFiles); $i < $c; $i++) {
-                if(file_exists($updateFolder . $addFiles[$i]['local'])) {
-                    if($zip->addFile($updateFolder . $addFiles[$i]['local'], $addFiles[$i]['local']) === false) {
-                        $this->sendResponse(['task' => 'add file into zip', 'success' => false]);
+            if(array_key_exists('addFiles', $updateFiles)) {
+                $addFiles = $updateFiles['addFiles'];
+                for($i = 0, $c = count($addFiles); $i < $c; $i++) {
+                    if(file_exists($updateFolder . $addFiles[$i]['local'])) {
+                        if($zip->addFile($updateFolder . $addFiles[$i]['local'], $addFiles[$i]['local']) === false) {
+                            $this->sendResponse(['task' => 'add file into zip', 'success' => false]);
+                        }
+                    }
+                }
+
+                $deleteFiles = $updateFiles['deleteFiles'];
+                for($i = 0, $c = count($deleteFiles); $i < $c; $i++) {
+                    if(file_exists($updateFolder . $deleteFiles[$i])) {
+                        $zip->addFile($updateFolder . $deleteFiles[$i]);
                     }
                 }
             }
-
-            $deleteFiles = $updateFiles['delete'];
-            for($i = 0, $c = count($deleteFiles); $i < $c; $i++) {
-                if(file_exists($updateFolder . $deleteFiles[$i])) {
-                    $zip->addFile($updateFolder . $deleteFiles[$i]);
-                }
-            }
-        }
 
         chmod($updateFolder . '/' . $filename, 0777);
     }
 
     public function installFiles() {
-        $updateFiles = Spyc::YAMLLoad($this->getUpdateFile());
-        $updateFiles = $updateFiles['files'];
-        $updateFolder = $_SESSION['root'];
-        $versionUrl = 'https://api.panda-studios.eu/updater/1/patch/';
+        $updateFiles = json_decode($this->getUpdateFile(), true);
+        $updateFolder = __DIR__ . "../../..";
+        $versionUrl = 'https://files.panda-studios.eu/1/';
 
-        if(array_key_exists('add', $updateFiles)) {
-            $addFiles = $updateFiles['add'];
+        if(array_key_exists('addFiles', $updateFiles)) {
+            $addFiles = $updateFiles['addFiles'];
             for($i = 0, $c = count($addFiles); $i < $c; $i++) {
                 $content = @file_get_contents($versionUrl . $addFiles[$i]['remote']);
                 $pathInfo = pathinfo($updateFolder . $addFiles[$i]['local']);
@@ -57,13 +55,13 @@ class Updater
             }
         }
 
-        if(array_key_exists('delete', $updateFiles)) {
-            for ($i = 0, $c = count($updateFiles['delete']); $i < $c; $i++) {
-                if (file_exists($updateFolder . $updateFiles['delete'][$i])) {
-                    if (is_dir($updateFolder . $updateFiles['delete'][$i])) {
-                        rmdir($updateFolder . $updateFiles['delete'][$i]);
+        if(array_key_exists('deleteFiles', $updateFiles)) {
+            for ($i = 0, $c = count($updateFiles['deleteFiles']); $i < $c; $i++) {
+                if (file_exists($updateFolder . $updateFiles['deleteFiles'][$i])) {
+                    if (is_dir($updateFolder . $updateFiles['deleteFiles'][$i])) {
+                        rmdir($updateFolder . $updateFiles['deleteFiles'][$i]);
                     } else {
-                        unlink($updateFolder . $updateFiles['delete'][$i]);
+                        unlink($updateFolder . $updateFiles['deleteFiles'][$i]);
                     }
                 }
             }
@@ -72,14 +70,14 @@ class Updater
     }
 
     public function updateVersion() {
-        $updateVersion = Spyc::YAMLLoad($this->getUpdateFile())['version'];
-        file_put_contents(__DIR__ . "../../storage/version.json", array("version" => $updateVersion));
+        $updateVersion = json_decode($this->getUpdateFile(), true);
+        file_put_contents(__DIR__ . "/version.json", json_encode(array("version" => $updateVersion["latestVersion"])));
     }
 
     public function versionIsCurrent() {
-        $spyc = Spyc::YAMLLoad($this->getUpdateFile());
+        $versionChanges = json_decode($this->getUpdateFile(), true);
         $currentVersion = $this->getCurrentVersion();
-        $updateVersion = $spyc['version'];
+        $updateVersion = $versionChanges["latestVersion"];
         $currentVersionNumbers = explode(".", $currentVersion);
         $updateVersionNumbers = explode(".", $updateVersion);
         $current = true;
@@ -100,9 +98,7 @@ class Updater
     }
 
     public function wantsForceUpdate() {
-        $spyc = Spyc::YAMLLoad($this->getUpdateFile());
-
-        return $spyc['force'];
+        return true;
     }
 
     public function checkForScripts() {
@@ -143,14 +139,14 @@ class Updater
     }
 
     public function executeScripts() {
-        $spyc = Spyc::YAMLLoad($this->getUpdateFile());
+        $changes = json_decode($this->getUpdateFile());
         $updateFolder = $_SESSION['root'];
         $exists = true;
 
-        if(!array_key_exists('scripts', $spyc)) {
+        if(!array_key_exists('scripts', $changes)) {
             $exists = false;
         } else {
-            foreach ($spyc['scripts'] as $script) {
+            foreach ($changes['scripts'] as $script) {
                 if(file_exists($updateFolder . $script)) {
                     include_once($updateFolder . $script);
                 }
@@ -161,7 +157,7 @@ class Updater
     }
 
     public function checkFilesAreWriteable() {
-        $spyc = Spyc::YAMLLoad($this->getUpdateFile());
+        $spyc = $this->getUpdateFile();
         $writeable = $this->checkUpdateFilesWritable($spyc);
 
         if($writeable) {
@@ -172,7 +168,7 @@ class Updater
     }
 
     private function checkUpdateFilesWritable($update) {
-        $updateFiles = $update['files']['add'];
+        $updateFiles = json_decode($update, true)["addFiles"];
 
         for($i = 0, $c = count($updateFiles); $i < $c; $i++) {
             $file = $updateFiles[$i]['local'];
@@ -184,11 +180,11 @@ class Updater
 
     private function checkDeleteFilesWriteable($delete) {
         $writeable = true;
-
-        if(!array_key_exists('delete', $delete['files']))
+        $delete = json_decode($delete, true);
+        if(!array_key_exists('deleteFiles', $delete))
             return true;
 
-        $deleteFiles = $delete['files']['delete'];
+        $deleteFiles = $delete['deleteFiles'];
         for($i = 0, $c = count($deleteFiles); $i < $c; $i++) {
             $file = $deleteFiles[$i];
             $writeable = $this->checkFileIsWriteable($file);
@@ -200,7 +196,7 @@ class Updater
     }
 
     private function checkFileIsWriteable($file) {
-        $updateFolder = $_SESSION['root'];
+        $updateFolder = __DIR__ . "../../";
         $pathInfo = pathinfo($updateFolder . $file);
 
         if(file_exists($updateFolder . $file) && !is_writable($updateFolder . '/' . $file)) {
@@ -237,11 +233,11 @@ class Updater
      * @return string
      */
     public function getCurrentVersion() {
-        return json_decode(file_get_contents(__DIR__ . "../../storage/version.json"))->version;
+        return json_decode(file_get_contents(__DIR__ . "/version.json"), true)["version"];
     }
 
     public function getRemoteVersion() {
-        $content = file_get_contents("https://api.panda-studios.eu/updater/1/info.json");
+        $content = file_get_contents("http://localhost:3000/projects/1/version");
         if($content === false) {
             return $this->getCurrentVersion();
         }
@@ -249,7 +245,7 @@ class Updater
     }
 
     public function getUpdateFile() {
-        return json_decode(file_get_contents("https://api.panda-studios.eu/updater/1/changes.json"));
+        return file_get_contents("http://localhost:3000/projects/1/updater/" . $this->getCurrentVersion() . "/changes");
     }
 
     /**
