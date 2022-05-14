@@ -32,15 +32,13 @@ if ($user->countUser() > 0) {
                     if($update->checkFilesAreWriteable()) {
                         $update->installFiles();
                         $update->updateVersion();
-                        echo("<script>console.log('[Panda-Studios] Updated LunaCore automatically.');</script>");
+                        echo("<script>console.log('[Panda-Studios] Updated URL-Shorter automatically.');</script>");
                     } else {
                         error_log('[Panda-Studios] Cannot update. No write permissions.' . $update->getRemoteVersion());
                         echo("<script>console.error('[Panda-Studios] Cannot update. No write permissions.')</script>");
                     }
                 } else {
                     echo("<script>console.log('[Panda-Studios] No automatic update required.');</script>");
-                    error_log('[Panda-Studios] A new version is available. Please log in into setup and update LunaCore: ' . $update->getRemoteVersion());
-                    echo("<script>console.log('[Panda-Studios] You can login into setup and update LunaCore to " . $update->getRemoteVersion(). "')</script>");
                 }
             } else {
                 echo("<script>console.log('[Panda-Studios] No updates available.');</script>");

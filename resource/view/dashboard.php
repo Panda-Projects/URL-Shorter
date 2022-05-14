@@ -148,7 +148,7 @@
                                         ></div>
                                     </div>
                                     <div>
-                                        <p class="font-semibold">Selfe</p>
+                                        <p class="font-semibold">Self</p>
 
                                     </div>
                                 </div>
@@ -221,7 +221,22 @@
                         <span
                                 class="px-2 py-1 text-sm leading-tight rounded-full"
                         >
-                          <a><?= $redirect1["code"] ?></a>
+                          <?= $redirect1["code"] ?>
+                            <button
+                                    style="cursor: pointer; display: inline-block; padding-left: 5px"
+                                    onclick="copy('<?= $_ENV["WEBSITE_URL"] ?>/<?= $redirect1["code"] ?>')">
+                                <svg
+                                        class="w-5 h-5"
+                                        fill="currentColor"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path
+                                            d="M384 96L384 0h-112c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48H464c26.51 0 48-21.49 48-48V128h-95.1C398.4 128 384 113.6 384 96zM416 0v96h96L416 0zM192 352V128h-144c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48h192c26.51 0 48-21.49 48-48L288 416h-32C220.7 416 192 387.3 192 352z"/></svg>
+                            </button>
+                            <div id="tooltip-default" role="tooltip"
+                                 class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700">
+                            Tooltip content
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
                         </span>
                             </td>
                             <td class="px-4 py-3 font-semibold text-sm">
@@ -245,6 +260,10 @@
                 <span class="col-span-2"></span>
             </div>
         </div>
-
     </div>
 </main>
+<script>
+    function copy(copyText) {
+        navigator.clipboard.writeText(copyText)
+    }
+</script>

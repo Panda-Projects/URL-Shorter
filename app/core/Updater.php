@@ -4,36 +4,38 @@ class Updater
 {
     public function createBackup() {
         $zip = new ZipArchive();
-        $filename = "backup-" . $this->getCurrentVersion() . ".zip";
+        $filename = "../storage/backup-" . $this->getCurrentVersion() . ".zip";
+
+        $updateFiles = json_decode($this->getUpdateFile(), true);
+        $updateFolder = __DIR__ . "../../..";
 
         if($zip->open($filename, ZipArchive::CREATE) !== true)
             $this->sendResponse(['task' => 'create zip file', 'success' => false]);
 
-            $updateFiles = json_decode($this->getUpdateFile(), true);
-            $updateFolder = __DIR__ . "../../storage";
 
-            if(array_key_exists('addFiles', $updateFiles)) {
-                $addFiles = $updateFiles['addFiles'];
-                for($i = 0, $c = count($addFiles); $i < $c; $i++) {
-                    if(file_exists($updateFolder . $addFiles[$i]['local'])) {
-                        if($zip->addFile($updateFolder . $addFiles[$i]['local'], $addFiles[$i]['local']) === false) {
-                            $this->sendResponse(['task' => 'add file into zip', 'success' => false]);
-                        }
-                    }
-                }
-
-                $deleteFiles = $updateFiles['deleteFiles'];
-                for($i = 0, $c = count($deleteFiles); $i < $c; $i++) {
-                    if(file_exists($updateFolder . $deleteFiles[$i])) {
-                        $zip->addFile($updateFolder . $deleteFiles[$i]);
+        if(array_key_exists('addFiles', $updateFiles)) {
+            $addFiles = $updateFiles['addFiles'];
+            for($i = 0, $c = count($addFiles); $i < $c; $i++) {
+                if(file_exists($updateFolder . $addFiles[$i]['local'])) {
+                    if($zip->addFile($updateFolder . $addFiles[$i]['local'], $addFiles[$i]['local']) === false) {
+                        $this->sendResponse(['task' => 'add file into zip', 'success' => false]);
                     }
                 }
             }
+            $deleteFiles = $updateFiles['deleteFiles'];
+            for($i = 0, $c = count($deleteFiles); $i < $c; $i++) {
+                if(file_exists($updateFolder . $deleteFiles[$i])) {
+                    $zip->addFile($updateFolder . $deleteFiles[$i]);
+                }
+            }
+        }
 
-        chmod($updateFolder . '/' . $filename, 0777);
+        $zip->close();
     }
 
     public function installFiles() {
+        $this->createBackup();
+
         $updateFiles = json_decode($this->getUpdateFile(), true);
         $updateFolder = __DIR__ . "../../..";
         $versionUrl = 'https://files.panda-studios.eu/1/';
@@ -75,19 +77,13 @@ class Updater
     }
 
     public function versionIsCurrent() {
-        $versionChanges = json_decode($this->getUpdateFile(), true);
+        $versionChanges = json_decode($this->getRemoteVersion(), true);
         $currentVersion = $this->getCurrentVersion();
-        $updateVersion = $versionChanges["latestVersion"];
-        $currentVersionNumbers = explode(".", $currentVersion);
-        $updateVersionNumbers = explode(".", $updateVersion);
+        $updateVersion = $versionChanges;
         $current = true;
 
-        foreach ($updateVersionNumbers as $key => $value) {
-            if(!array_key_exists($key,$currentVersionNumbers)) {
-                $current = false;
-            } else if($value > $currentVersionNumbers[$key]) {
-                $current = false;
-            }
+        if($updateVersion > $currentVersion) {
+            $current = false;
         }
 
         return ['current' => $current, 'currentVersion' => $currentVersion, 'updateVersion' => $updateVersion];
@@ -237,7 +233,7 @@ class Updater
     }
 
     public function getRemoteVersion() {
-        $content = file_get_contents("http://localhost:3000/projects/1/version");
+        $content = file_get_contents("https://api.panda-studios.eu/projects/1/version");
         if($content === false) {
             return $this->getCurrentVersion();
         }
@@ -245,7 +241,7 @@ class Updater
     }
 
     public function getUpdateFile() {
-        return file_get_contents("http://localhost:3000/projects/1/updater/" . $this->getCurrentVersion() . "/changes");
+        return file_get_contents("https://api.panda-studios.eu/projects/1/updater/" . $this->getCurrentVersion() . "/changes");
     }
 
     /**
