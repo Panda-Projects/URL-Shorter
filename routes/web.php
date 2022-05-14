@@ -33,7 +33,6 @@ if ($user->countUser() > 0) {
 
             if($update->isNewVersionAvailable()) {
                 echo("<script>console.log('[Panda-Studios] Update found: " . $update->getRemoteVersion() . "');</script>");
-                echo("<script>console.log('[Panda-Studios] Check if automatic update is required.');</script>");
                 if($update->wantsForceUpdate()) {
                     if($update->checkFilesAreWriteable()) {
                         $update->installFiles();
@@ -43,11 +42,7 @@ if ($user->countUser() > 0) {
                         error_log('[Panda-Studios] Cannot update. No write permissions.' . $update->getRemoteVersion());
                         echo("<script>console.error('[Panda-Studios] Cannot update. No write permissions.')</script>");
                     }
-                } else {
-                    echo("<script>console.log('[Panda-Studios] No automatic update required.');</script>");
                 }
-            } else {
-                echo("<script>console.log('[Panda-Studios] No updates available.');</script>");
             }
 
             include '../resource/view/dashboard.php';
