@@ -27,6 +27,24 @@ if ($user->countUser() > 0) {
             $redirects = $redirect->getAllRedirects();
             $name = "Dashboard";
             include '../resource/view/header.php';
+            require '../app/core/Updater.php';
+            $update = new Updater();
+
+
+            if($update->isNewVersionAvailable()) {
+                echo("<script>console.log('[Panda-Studios] Update found: " . $update->getRemoteVersion() . "');</script>");
+                if($update->wantsForceUpdate()) {
+                    if($update->checkFilesAreWriteable()) {
+                        $update->installFiles();
+                        $update->updateVersion();
+                        echo("<script>console.log('[Panda-Studios] Updated URL-Shorter automatically.');</script>");
+                    } else {
+                        error_log('[Panda-Studios] Cannot update. No write permissions.' . $update->getRemoteVersion());
+                        echo("<script>console.error('[Panda-Studios] Cannot update. No write permissions.')</script>");
+                    }
+                }
+            }
+
             include '../resource/view/dashboard.php';
             include '../resource/view/footer.php';
         });
