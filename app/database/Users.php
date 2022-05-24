@@ -111,6 +111,14 @@ class Users
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getPlayers()
+    {
+        $query = "SELECT id, username FROM Users WHERE id = ?";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function countUser() {
         $query = "SELECT id FROM Users";
         $stmt = $this->connection->prepare($query);
